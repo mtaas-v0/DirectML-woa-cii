@@ -9,7 +9,8 @@ on:
 
 jobs:
   build-native-arm64:
-    runs-on: windows-11-arm
+    # 1. FIXED: Correctly matching the official GitHub native ARM64 image naming convention
+    runs-on: windows-11-arm64
 
     steps:
     - name: Checkout Forked Repository
@@ -21,7 +22,9 @@ jobs:
         cd DxDispatch
         mkdir build
         cd build
-        cmake -G "Visual Studio 17 2022" ..
+        # 2. FIXED: Explicitly mapping architecture output to avoid host default fallback errors
+        cmake -G "Visual Studio 17 2022" -A ARM64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
+
 
     - name: Build DxDispatch (Release)
       shell: cmd
@@ -33,7 +36,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dxdispatch-native-arm64
+        # 3. FIXED: Using path wildcards to locate binaries regardless of the generator output folder structure
         path: |
-          DxDispatch/build/Release/dxdispatch.exe
-          DxDispatch/build/Release/*.dll
+          **/dxdispatch.exe
+          **/DirectML.dll
+          **/dxcompiler.dll
         if-no-files-found: error
