@@ -15,6 +15,17 @@ jobs:
     steps:
     - name: Checkout Forked Repository
       uses: actions/checkout@v4
+      
+    # 1. ADDED: Cache the external dependencies folder
+    - name: Cache CMake Dependencies
+      id: cache-deps
+      uses: actions/cache@v4
+      with:
+        path: DxDispatch/build/_deps
+        # The cache invalidates if you change CMakeLists.txt or every 7 days
+        key: ${{ runner.os }}-dxdispatch-deps-${{ hashFiles('DxDispatch/CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-dxdispatch-deps-
 
     - name: Configure CMake Natively
       shell: cmd
@@ -38,7 +49,5 @@ jobs:
         name: dxdispatch-native-arm64
         # 3. FIXED: Using path wildcards to locate binaries regardless of the generator output folder structure
         path: |
-          **/dxdispatch.exe
-          **/DirectML.dll
-          **/dxcompiler.dll
+          DxDispatch/build/Release/
         if-no-files-found: error
