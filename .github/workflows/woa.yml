@@ -1,0 +1,39 @@
+name: Build DxDispatch Native ARM64
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-native-arm64:
+    runs-on: windows-11-arm
+
+    steps:
+    - name: Checkout Forked Repository
+      uses: actions/checkout@v4
+
+    - name: Configure CMake Natively
+      shell: cmd
+      run: |
+        cd DxDispatch
+        mkdir build
+        cd build
+        cmake -G "Visual Studio 17 2022" ..
+
+    - name: Build DxDispatch (Release)
+      shell: cmd
+      run: |
+        cd DxDispatch/build
+        cmake --build . --config Release
+
+    - name: Upload Native ARM64 Binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: dxdispatch-native-arm64
+        path: |
+          DxDispatch/build/Release/dxdispatch.exe
+          DxDispatch/build/Release/*.dll
+        if-no-files-found: error
