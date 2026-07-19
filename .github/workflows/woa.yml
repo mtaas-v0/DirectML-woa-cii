@@ -10,7 +10,7 @@ on:
 jobs:
   build-native-arm64:
     # 1. FIXED: Correctly matching the official GitHub native ARM64 image naming convention
-    runs-on: windows-11-arm64
+    runs-on: windows-11-arm
 
     steps:
     - name: Checkout Forked Repository
